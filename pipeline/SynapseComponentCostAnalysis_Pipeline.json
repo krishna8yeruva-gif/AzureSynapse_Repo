@@ -1,0 +1,57 @@
+{
+	"name": "SynapseComponentCostAnalysis_Pipeline",
+	"properties": {
+		"description": "Pipeline that runs the SynapseComponentCostAnalysis PySpark notebook to retrieve and display Azure Cost Management data for each component in the edhgithubazsyn Synapse workspace.",
+		"activities": [
+			{
+				"name": "Run_CostAnalysis_Notebook",
+				"description": "Executes the SynapseComponentCostAnalysis notebook which queries the Azure Cost Management API via Managed Identity and outputs per-component cost details.",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.01:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "SynapseComponentCostAnalysis",
+						"type": "NotebookReference"
+					},
+					"parameters": {
+						"LOOKBACK_DAYS": {
+							"value": {
+								"value": "@pipeline().parameters.LOOKBACK_DAYS",
+								"type": "Expression"
+							},
+							"type": "int"
+						}
+					},
+					"snapshot": true,
+					"conf": {
+						"spark.dynamicAllocation.enabled": false
+					},
+					"numExecutors": 2
+				}
+			}
+		],
+		"parameters": {
+			"LOOKBACK_DAYS": {
+				"type": "int",
+				"defaultValue": 30
+			}
+		},
+		"variables": {},
+		"annotations": [
+			"CostManagement",
+			"AzureSynapse",
+			"FinOps"
+		],
+		"folder": {
+			"name": "CostAnalysis"
+		}
+	}
+}
